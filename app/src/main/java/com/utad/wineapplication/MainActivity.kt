@@ -64,12 +64,12 @@ fun WineAppHome(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(start = 16.dp, top = 300.dp),  // Agrega padding para moverlo a la izquierda y hacia arriba
+        verticalArrangement = Arrangement.Top,   // Alinea el contenido hacia la parte superior
+        horizontalAlignment = Alignment.Start    // Alinea el contenido hacia la izquierda
         ) {
             Text(text = "Bienvenido a WineApp", fontSize = 24.sp, color = Color.Black)
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             Button(onClick = { navController.navigate("wine_list") }) {
                 Text(text = "Explorar vinos")
@@ -85,7 +85,7 @@ fun WineListScreen(navController: NavController) {
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(text = "Lista de Vinos", fontSize = 24.sp, color = Color.Black)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(5.dp))
 
         LazyColumn {
             items(wineList) { wine ->
@@ -98,6 +98,11 @@ fun WineListScreen(navController: NavController) {
                 )
             }
         }
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Botón para volver
+        Button(onClick = { navController.navigateUp() }) {
+            Text(text = "Volver")
     }
 }
 
@@ -107,4 +112,5 @@ fun WineAppPreview() {
     WineApplicationTheme {
         AppNavigator()
     }
+}
 }

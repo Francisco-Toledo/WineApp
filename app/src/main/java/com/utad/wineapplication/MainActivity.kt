@@ -14,16 +14,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
-
+import com.utad.wineapplication.ui.home.WineAppHome
+import com.utad.wineapplication.ui.scan.ScanScreen
 import com.utad.wineapplication.ui.theme.WineApplicationTheme
+import androidx.compose.ui.tooling.preview.Preview as Preview1
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.utad.wineapplication.data.AppDatabase
+import com.utad.wineapplication.ui.scan.OCRViewModelFactory
+import com.utad.wineapplication.viewmodels.OCRViewModel
+import com.utad.wineapplication.data.ScannedText
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +51,7 @@ fun AppNavigator() {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { WineAppHome(navController) }
         composable("wine_list") { WineListScreen(navController) }
+        composable("scan") { ScanScreen(navController) }
     }
 }
 
@@ -71,8 +78,8 @@ fun WineAppHome(navController: NavController) {
             Text(text = "Bienvenido a WineApp", fontSize = 24.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(25.dp))
 
-            Button(onClick = { navController.navigate("wine_list") }) {
-                Text(text = "Explorar vinos")
+            Button(onClick = { navController.navigate("scan") }) {
+                Text(text = "Escanear vino")
             }
         }
     }
@@ -81,32 +88,39 @@ fun WineAppHome(navController: NavController) {
 // 🔹 Segunda pantalla con la lista de vinos
 @Composable
 fun WineListScreen(navController: NavController) {
+    val viewModel: OCRViewModel = viewModel()
+    val scannedTexts by viewModel.scannedTexts.collectAsState(initial = emptyList())
+
+    // Lista estática de vinos (puedes moverla a un repositorio)
     val wineList = listOf("Cabernet Sauvignon", "Merlot", "Tempranillo", "Malbec", "Chardonnay")
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text(text = "Lista de Vinos", fontSize = 24.sp, color = Color.Black)
-        Spacer(modifier = Modifier.height(5.dp))
-
+        // Lista de vinos
+        Text("Nuestros vinos", style = MaterialTheme.typography.headlineSmall)
         LazyColumn {
             items(wineList) { wine ->
-                Text(
-                    text = wine,
-                    fontSize = 20.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                )
+                Text(wine, modifier = Modifier.padding(8.dp))
             }
         }
-        Spacer(modifier = Modifier.height(32.dp))
+
+        // Lista de textos escaneados
+        Text("Textos escaneados", style = MaterialTheme.typography.headlineSmall)
+        LazyColumn {
+            items(scannedTexts) { scannedText ->
+                Column(modifier = Modifier.padding(8.dp)) {
+                    Text("Imagen: ${scannedText.imageUri}")
+                    Text("Texto: ${scannedText.extractedText}")
+                }
+            }
+        }
 
         // Botón para volver
         Button(onClick = { navController.navigateUp() }) {
-            Text(text = "Volver")
+            Text("Volver")
         }
     }
 
-    @Preview(showBackground = true)
+    @Preview1(showBackground = true)
     @Composable
     fun WineAppPreview() {
         WineApplicationTheme {

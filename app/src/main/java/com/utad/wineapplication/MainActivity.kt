@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,16 +21,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
-import com.utad.wineapplication.ui.home.WineAppHome
 import com.utad.wineapplication.ui.scan.ScanScreen
 import com.utad.wineapplication.ui.theme.WineApplicationTheme
 import androidx.compose.ui.tooling.preview.Preview as Preview1
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.utad.wineapplication.data.AppDatabase
-import com.utad.wineapplication.ui.scan.OCRViewModelFactory
 import com.utad.wineapplication.viewmodels.OCRViewModel
-import com.utad.wineapplication.data.ScannedText
-
+import com.utad.wineapplication.viewmodels.OCRViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +47,8 @@ fun AppNavigator() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "home") {
-        composable("home") { WineAppHome(navController) }
+       // composable("homeNavigation") { WineAppHomeNavigation(navController) }
+        composable("home"){ WineAppHome(navController) }
         composable("wine_list") { WineListScreen(navController) }
         composable("scan") { ScanScreen(navController) }
     }
@@ -78,6 +77,13 @@ fun WineAppHome(navController: NavController) {
             Text(text = "Bienvenido a WineApp", fontSize = 24.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(25.dp))
 
+            // Botón de tu compañero
+            Button(onClick = { navController.navigate("wine_list") }) {
+                Text("Explorar vinos")
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
             Button(onClick = { navController.navigate("scan") }) {
                 Text(text = "Escanear vino")
             }
@@ -88,10 +94,7 @@ fun WineAppHome(navController: NavController) {
 // 🔹 Segunda pantalla con la lista de vinos
 @Composable
 fun WineListScreen(navController: NavController) {
-    val viewModel: OCRViewModel = viewModel()
-    val scannedTexts by viewModel.scannedTexts.collectAsState(initial = emptyList())
-
-    // Lista estática de vinos (puedes moverla a un repositorio)
+    // Lista estática temporal (sin ViewModel)
     val wineList = listOf("Cabernet Sauvignon", "Merlot", "Tempranillo", "Malbec", "Chardonnay")
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
@@ -103,13 +106,40 @@ fun WineListScreen(navController: NavController) {
             }
         }
 
-        // Lista de textos escaneados
-        Text("Textos escaneados", style = MaterialTheme.typography.headlineSmall)
+        Button(onClick = { navController.popBackStack() }) {
+            Text("Volver")
+        }
+    }
+}
+/*fun WineListScreen(
+    navController: NavController,
+    viewModel: OCRViewModel = viewModel(
+        factory = OCRViewModelFactory(
+            AppDatabase.getDatabase(LocalContext.current).scannedTextDao()
+        )
+    )
+) {
+    val scannedTexts = viewModel.scannedTexts
+
+    // Lista estática de vinos (puedes moverla a un repositorio)
+    val wineList = listOf("Cabernet Sauvignon", "Merlot", "Tempranillo", "Malbec", "Chardonnay")
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        // Lista de vinos estaticos
+        Text("Nuestros vinos", style = MaterialTheme.typography.headlineSmall)
         LazyColumn {
-            items(scannedTexts) { scannedText ->
+            items(wineList) { wine ->
+                Text(wine, modifier = Modifier.padding(8.dp))
+            }
+        }
+
+        // Lista de textos escaneados
+        Text("Textos escaneados:", style = MaterialTheme.typography.headlineSmall)
+        LazyColumn {
+            items(viewModel.scannedTexts) { scanned ->
                 Column(modifier = Modifier.padding(8.dp)) {
-                    Text("Imagen: ${scannedText.imageUri}")
-                    Text("Texto: ${scannedText.extractedText}")
+                    Text("Imagen: ${scanned.imageUri}")
+                    Text("Texto: ${scanned.extractedText}")
                 }
             }
         }
@@ -127,4 +157,4 @@ fun WineListScreen(navController: NavController) {
             AppNavigator()
         }
     }
-}
+}*/

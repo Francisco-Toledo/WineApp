@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
 }
 
@@ -17,6 +16,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        composeOptions {
+            kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+        }
     }
 
     buildTypes {
@@ -55,12 +57,11 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)  // Actualizado
 
+
     // Room
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.common)
-    implementation(libs.androidx.room.runtime.android)
-    kapt(libs.androidx.room.compiler)
-    implementation(libs.room.ktx)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler) // Usa la referencia del TOML
 
     // ML Kit (actualiza a versión más reciente)
     implementation(libs.mlkit.text.recognition) // Usar esta única dependencia

@@ -1,42 +1,55 @@
 package com.utad.wineapplication.ui.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
-import java.lang.reflect.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.core.net.toUri
+import com.utad.wineapplication.data.ScannedText
+import java.io.File
+import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun WineAppHome(navController: NavController) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.wine_background),
-            contentDescription = "Fondo",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-
-        Column(
-            modifier = Modifier
-                .padding(start = 16.dp, top = 100.dp)
-                .align(Alignment.TopStart)
+fun ScannedItem(scannedText: ScannedText) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Botón de tu compañero
-            Button(onClick = { navController.navigate("wine_list") }) {
-                Text("Explorar vinos")
-            }
+            // Mostrar imagen escaneada
+            Image(
+                painter = rememberAsyncImagePainter(File(scannedText.imageUri).toUri()),
+                contentDescription = "Imagen escaneada",
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
-            // Tu botón de escaneo
-            Button(onClick = { navController.navigate("scan") }) {
-                Text("Escanear etiqueta")
+            // Texto escaneado
+            Column {
+                Text(text = "Texto:", style = MaterialTheme.typography.labelSmall)
+                Text(text = scannedText.extractedText, style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

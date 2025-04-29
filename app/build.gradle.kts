@@ -82,4 +82,8 @@ dependencies {
     implementation (libs.androidx.activity.compose.v1101)
     implementation (libs.androidx.core.ktx.v1120)
     implementation (libs.accompanist.permissions)
+
+    implementation(libs.coil.compose)
+    implementation (libs.coil.compose.v222)
+
 }

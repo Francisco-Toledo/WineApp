@@ -93,26 +93,6 @@ fun WineAppHome(navController: NavController) {
     }
 }
 
-// 🔹 Segunda pantalla con la lista de vinos
-/*@Composable
-fun WineListScreen(navController: NavController) {
-    // Lista estática temporal (sin ViewModel)
-    val wineList = listOf("Cabernet Sauvignon", "Merlot", "Tempranillo", "Malbec", "Chardonnay")
-
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Lista de vinos
-        Text("Nuestros vinos", style = MaterialTheme.typography.headlineSmall)
-        LazyColumn {
-            items(wineList) { wine ->
-                Text(wine, modifier = Modifier.padding(8.dp))
-            }
-        }
-
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Volver")
-        }
-    }
-}*/
 @Composable
 fun WineListScreen(navController: NavController) {
     val context = LocalContext.current

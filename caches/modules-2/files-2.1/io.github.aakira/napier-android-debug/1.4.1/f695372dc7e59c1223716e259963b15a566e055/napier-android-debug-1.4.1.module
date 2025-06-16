@@ -1,0 +1,111 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../napier/1.4.1/napier-1.4.1.module",
+    "group": "io.github.aakira",
+    "module": "napier",
+    "version": "1.4.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.5.1",
+      "buildId": "njitvgcr3zf7tcupnoeysjocda"
+    }
+  },
+  "variants": [
+    {
+      "name": "debugApiElements-published",
+      "attributes": {
+        "com.android.build.api.attributes.BuildTypeAttr": "debug",
+        "com.android.build.api.attributes.VariantAttr": "debug",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "1.4.32"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "napier-debug.aar",
+          "url": "napier-android-debug-1.4.1.aar",
+          "size": 11185,
+          "sha512": "cb32fca2f5a414215c124ea0c33aa09760c25114da09f52caeef97d95a0eabf14a756f8f1f50855166045e8fd961ba44bba1057d92096e35cf5ddfce931c1803",
+          "sha256": "783f73dcd5bcc7817d4f76865c61050c70e48934d81329afd27204bfd85ef2d6",
+          "sha1": "be6756e5c48c1e7a899d8b7f1e8f5ccb69481ea6",
+          "md5": "002c60aa25705b177cf00afc1f59db55"
+        }
+      ]
+    },
+    {
+      "name": "debugRuntimeElements-published",
+      "attributes": {
+        "com.android.build.api.attributes.BuildTypeAttr": "debug",
+        "com.android.build.api.attributes.VariantAttr": "debug",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "1.4.32"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-common",
+          "version": {
+            "requires": "1.4.32"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "napier-debug.aar",
+          "url": "napier-android-debug-1.4.1.aar",
+          "size": 11185,
+          "sha512": "cb32fca2f5a414215c124ea0c33aa09760c25114da09f52caeef97d95a0eabf14a756f8f1f50855166045e8fd961ba44bba1057d92096e35cf5ddfce931c1803",
+          "sha256": "783f73dcd5bcc7817d4f76865c61050c70e48934d81329afd27204bfd85ef2d6",
+          "sha1": "be6756e5c48c1e7a899d8b7f1e8f5ccb69481ea6",
+          "md5": "002c60aa25705b177cf00afc1f59db55"
+        }
+      ]
+    },
+    {
+      "name": "metadataApiElements-published",
+      "attributes": {
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "available-at": {
+        "url": "../../napier/1.4.1/napier-1.4.1.module",
+        "group": "io.github.aakira",
+        "module": "napier",
+        "version": "1.4.1"
+      }
+    },
+    {
+      "name": "commonMainMetadataElements-published",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "available-at": {
+        "url": "../../napier/1.4.1/napier-1.4.1.module",
+        "group": "io.github.aakira",
+        "module": "napier",
+        "version": "1.4.1"
+      }
+    }
+  ]
+}

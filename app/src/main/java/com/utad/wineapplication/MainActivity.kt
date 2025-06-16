@@ -29,6 +29,7 @@ import com.utad.wineapplication.data.AppDatabase
 import com.utad.wineapplication.data.ScannedText
 import com.utad.wineapplication.viewmodels.WineListViewModelFactory
 import coil.compose.rememberImagePainter
+import com.utad.wineapplication.data.Wine
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,11 +118,12 @@ fun WineListScreen(navController: NavController) {
     val context = LocalContext.current
     val scannedTextDao = AppDatabase.getDatabase(context).scannedTextDao()
     val viewModelFactory = WineListViewModelFactory(scannedTextDao)
-    val viewModel: WineListViewModel = viewModel(factory = viewModelFactory)  // Usa esta forma correctamente
+    val viewModel: WineListViewModel = viewModel(factory = viewModelFactory)
 
-    val scannedTexts by viewModel.scannedTexts.collectAsState(initial = emptyList())
+    // Recoge todos los items (vinos predefinidos + escaneados)
+    val allItems by viewModel.allItems.collectAsState(initial = emptyList())
 
-    // Estados para el diálogo
+    // Estados para el diálogo de edición (solo para ScannedText)
     var showDialog by remember { mutableStateOf(false) }
     var currentItem by remember { mutableStateOf<ScannedText?>(null) }
     var newText by remember { mutableStateOf("") }
@@ -132,70 +134,38 @@ fun WineListScreen(navController: NavController) {
             .padding(WindowInsets.safeDrawing.asPaddingValues())
             .padding(16.dp)
     ) {
-        Text("Textos escaneados:", style = MaterialTheme.typography.headlineSmall)
+        Text("Nuestros Vinos", style = MaterialTheme.typography.headlineMedium)
 
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            items(scannedTexts) { scanned ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        // Mostrar la imagen si imageUri no está vacío
-                        if (scanned.imageUri.isNotEmpty()) {
-                            Image(
-                                painter = rememberImagePainter(scanned.imageUri),
-                                contentDescription = "Imagen escaneada",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp) // Ajusta el tamaño de la imagen según necesites
-                                    .padding(bottom = 8.dp)
-                            )
-                        }
-
-                        // Mostrar el texto extraido
-                        Text(text = scanned.extractedText)
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            TextButton(onClick = {
-                                currentItem = scanned
-                                newText = scanned.extractedText
-                                showDialog = true
-                            }) {
-                                Text("Editar")
-                            }
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            TextButton(onClick = {
-                                viewModel.deleteItem(scanned)
-                            }) {
-                                Text("Borrar")
-                            }
-                        }
-                    }
+            items(allItems) { item ->
+                when (item) {
+                    is Wine -> WineItem(wine = item)
+                    is ScannedText -> ScannedItem(
+                        scanned = item,
+                        onEdit = {
+                            currentItem = item
+                            newText = item.extractedText
+                            showDialog = true
+                        },
+                        onDelete = { viewModel.deleteItem(item) }
+                    )
                 }
             }
         }
 
         Button(
-            onClick = { navController.navigateUp() },
+            onClick = { navController.popBackStack() },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Volver")
         }
     }
 
-    // AlertDialog para editar
+    // Diálogo para editar textos escaneados
     if (showDialog && currentItem != null) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -222,12 +192,76 @@ fun WineListScreen(navController: NavController) {
                     singleLine = false,
                     label = { Text("Nuevo texto") },
                     modifier = Modifier.fillMaxWidth()
-
                 )
             }
         )
     }
 }
 
+// Añade estos composables al mismo archivo (MainActivity.kt)
+
+@Composable
+fun WineItem(wine: Wine) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Image(
+                painter = painterResource(id = wine.imageResource),
+                contentDescription = "Imagen de ${wine.name}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(wine.name, style = MaterialTheme.typography.headlineSmall)
+            Text(wine.region, style = MaterialTheme.typography.bodyMedium)
+            Text(wine.description, style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+@Composable
+fun ScannedItem(
+    scanned: ScannedText,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            if (scanned.imageUri.isNotEmpty()) {
+                Image(
+                    painter = rememberImagePainter(scanned.imageUri),
+                    contentDescription = "Imagen escaneada",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(bottom = 8.dp)
+                )
+            }
+            Text(text = scanned.extractedText)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = onEdit) {
+                    Text("Editar")
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                TextButton(onClick = onDelete) {
+                    Text("Borrar")
+                }
+            }
+        }
+    }
+}
 
 

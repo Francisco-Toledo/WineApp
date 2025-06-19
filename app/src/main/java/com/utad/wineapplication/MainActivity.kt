@@ -100,10 +100,26 @@ fun WineListScreen(navController: NavController) {
     val viewModelFactory = WineListViewModelFactory(scannedTextDao)
     val viewModel: WineListViewModel = viewModel(factory = viewModelFactory)
 
-    // Recoge todos los items (vinos predefinidos + escaneados)
     val allItems by viewModel.allItems.collectAsState(initial = emptyList())
 
-    // Estados para el diálogo de edición (solo para ScannedText)
+    // Estado para la búsqueda
+    var searchQuery by remember { mutableStateOf("") }
+
+    // Filtrar lista según searchQuery
+    val filteredItems = if (searchQuery.isBlank()) {
+        allItems
+    } else {
+        val query = searchQuery.lowercase()
+        allItems.filter { item ->
+            when (item) {
+                is Wine -> item.name.lowercase().contains(query) || item.region.lowercase().contains(query)
+                is ScannedText -> item.extractedText.lowercase().contains(query)
+                else -> false
+            }
+        }
+    }
+
+
     var showDialog by remember { mutableStateOf(false) }
     var currentItem by remember { mutableStateOf<ScannedText?>(null) }
     var newText by remember { mutableStateOf("") }
@@ -116,12 +132,24 @@ fun WineListScreen(navController: NavController) {
     ) {
         Text("Nuestros Vinos", style = MaterialTheme.typography.headlineMedium)
 
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // TextField para búsqueda
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Buscar por nombre") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            items(allItems) { item ->
+            items(filteredItems) { item ->
                 when (item) {
                     is Wine -> WineItem(wine = item)
                     is ScannedText -> ScannedItem(
@@ -145,7 +173,6 @@ fun WineListScreen(navController: NavController) {
         }
     }
 
-    // Diálogo para editar textos escaneados
     if (showDialog && currentItem != null) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
